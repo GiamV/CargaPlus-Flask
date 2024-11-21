@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Actualizar Usuario{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/addusuario.css')}}">
+<style>
+        /* Estilo para el contenedor del campo de contraseña */
+        .password-container {
+            position: relative;
+            width: 100%;
+            /* Asegura que el campo ocupe todo el ancho */
+        }
+
+        /* Estilo para el campo de contraseña */
+        .password-container input[type="password"],
+        .password-container input[type="text"] {
+            width: 100%;
+            /* Asegura que el campo ocupe todo el ancho */
+            padding-right: 40px;
+            /* Espacio para el icono */
+        }
+
+        /* Estilo para el ícono del ojo */
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+    </style>
+
+{% endblock %}
+
+
+{% block body %}
+
+        <header>
+            <h1>Panel de Administración</h1>
+            <a href="/usuarios" class="back-button"> Volver</a>
+        </header>
+        <div class="container">
+            <h2>Registro de Usuario</h2>
+            <form action="{{ url_for('formActualizarUsuario', id = dataInfo.id)}}" method="POST" id="registroForm"
+                enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" value="{{ dataInfo.nombre }}" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="correo">Correo</label>
+                    <input value="{{ dataInfo.correo }}" type="email" id="correo" name="correo" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="password-container">
+                        <input value="{{ dataInfo.password }}" type="password" id="password" name="password" />
+                        <i class="fas fa-eye password-toggle" id="togglePassword" onclick="togglePassword()"></i>
+                    </div>
+
+                    <script>
+                        function togglePassword() {
+                            const passwordField = document.getElementById("password");
+                            const toggleIcon = document.getElementById("togglePassword");
+
+                            // Cambiar el tipo de campo y el icono según el estado actual
+                            if (passwordField.type === "password") {
+                                passwordField.type = "text";
+                                toggleIcon.classList.remove("fa-eye");
+                                toggleIcon.classList.add("fa-eye-slash");
+                            } else {
+                                passwordField.type = "password";
+                                toggleIcon.classList.remove("fa-eye-slash");
+                                toggleIcon.classList.add("fa-eye");
+                            }
+                        }
+                    </script>
+                </div>
+
+                <div class="form-group">
+                    <label for="rol">ID Rol</label>
+                    <select id="id_rol" name="id_rol" required>
+                        {% for rol in roles %} {% if(rol.id == dataInfo.id_rol) %}
+                        <option value="{{ rol.id }}" selected>
+                            {{ rol.nombre_rol }}
+                        </option>
+                        {% else %}
+                        <option value="{{ rol.id }}">{{ rol.nombre_rol }}</option>
+                        {% endif %} {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fechaRegistro">Fecha de Registro</label>
+                    <input value="{{ dataInfo.fecha_registro }}" type="text" id="fechaRegistro" name="fechaRegistro"
+                        readonly />
+                </div>
+
+                <div class="form-group">
+                    <label for="estado">Estado</label>
+
+                    {% with estados = {0: "Inactivo", 1: "Activo"} %}
+                    <select id="estado" name="estado">
+                        {% for key, value in estados.items() %} {% if key ==
+                        dataInfo.estado %}
+                        <option value="{{ key }}" selected>{{ value }}</option>
+                        {% else %}
+                        <option value="{{ key }}">{{ value }}</option>
+                        {% endif %} {% endfor %}
+                    </select>
+                    {% endwith %} 
+                </div>
+
+                <div class="form-group">
+
+                    <label for="imagen">Foto de Usuario</label>
+                    {% set urlUsuario = '/static/img/' %}
+                    <div class="image-section">
+                        <!-- Visualización de la imagen actual -->
+                        <div class="image-preview">
+                            <img id="userImage" src="{{ urlUsuario }}{{ dataInfo.foto }}" alt="Foto del Usuario">
+                        </div>
+                
+                        <!-- Nombre de la imagen y campo de carga -->
+                        <div class="image-info">
+                            <input type="text" id="imageName" name="imageName" value="{{ dataInfo.foto }}" readonly>
+                            <input type="file" id="foto" name="foto" accept="image/*">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit">Actualizar</button>
+            </form>
+        </div>
+{% endblock %}

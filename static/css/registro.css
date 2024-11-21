@@ -1,0 +1,191 @@
+
+
+/* Contenedor principal */
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+ /* Ocupa toda la altura de la ventana */
+    border-radius: 15px;
+    padding: 20px;
+}
+
+/* Tarjeta de asistencia horizontal */
+.attendance-card {
+    display: flex;
+    background-color: #6b5c9d;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    width: 90%;
+    max-width: 1000px;
+    height: 500px;
+    overflow: hidden;
+    border: 2px solid #6b5c9d;
+    transition: transform 0.3s;
+}
+
+.attendance-card:hover {
+    transform: scale(1.02);
+}
+/* Estilo para la sección de la foto */
+.photo-box {
+    width: 50%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #6b5c9d;
+    position: relative;
+    border-right: 2px solid #6b5c9d;
+    overflow: hidden; /* Para asegurarte de que la imagen no se salga del contenedor */
+}
+
+.photo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ajusta la imagen para que cubra todo el espacio sin distorsionarse */
+    border-radius: 10px;
+}
+
+
+.photo-box::before {
+
+    font-size: 24px;
+    color: #6b5c9d;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Sección del formulario */
+.form-section {
+    width: 50%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-section h1 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.form-section input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón de enviar */
+.submit-btn {
+    background-color: #484848;
+    color: #fff;
+    padding: 12px;
+    width: 90%;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #303030;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos Responsivos */
+@media (max-width: 768px) {
+    .attendance-card {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .photo-box, .form-section {
+        width: 100%;
+        height: 200px;
+    }
+
+    .form-section {
+        padding: 20px;
+    }
+}
+
+/* Estilo para etiquetas */
+.form-section label {
+    width: 90%;
+    color: #fff;
+    text-align: left;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Ajustar inputs con solo lectura */
+.form-section input[readonly] {
+    background-color: #f9f9f9;
+    color: #6b6b6b;
+    cursor: not-allowed;
+    font-weight: bold;
+}
+
+/* Ajustar espaciado entre etiquetas y campos */
+.form-section input,
+.form-section label {
+    display: block;
+}
+
+
+
+
+
+
+
+/* Tabla: Estilo básico */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+thead tr {
+    background-color: #6b5c9d;
+    color: #fff;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+/* Colores de las filas según el status */
+tr.asistencia {
+    background-color: #a8e6cf; /* Verde patito */
+    color: #000; /* Texto en negro */
+}
+
+tr.tardanza {
+    background-color: #ffd54f; /* Amarillo */
+    color: #000; /* Texto en negro */
+}
+
+tr.falta {
+    background-color: #ef9a9a; /* Rojo claro */
+    color: #000; /* Texto en negro */
+}
+
+/* Efecto hover para filas */
+tr:hover {
+    opacity: 0.9;
+}

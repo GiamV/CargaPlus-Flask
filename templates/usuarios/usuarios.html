@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Usuarios{% endblock %}
+
+
+{% block body %}
+
+<header>
+    <h1>Panel de Administración</h1>
+    <a href="/registrar-usuario"><button  class="new-user-btn">Nuevo Usuario</button></a>
+</header>
+
+<section class="user-list">
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Fecha de Registro</th>
+                <th>Estado</th>
+                <th >Foto</th>
+                <th>Acciones</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for mostrar in usuarios %}
+
+            <tr>
+                <td>{{ mostrar.id }}</td>
+                <td>{{ mostrar.nombre }}</td>
+                <td>{{ mostrar.correo }}</td>
+                <td>{{ mostrar.nombre_rol }}</td>
+                <td>{{ mostrar.fecha_registro }}</td>
+
+                <td>{{ mostrar.estado == 1 and 'Activo' or 'Inactivo' }}</td>
+                <td>
+                    {% if(mostrar.foto !="") %}
+                    <img src="/static/img/{{ mostrar.foto }}" class="sin_foto_mini" alt="{{ mostrar.nombre }}">
+                    {% else %}
+                    <img src="/static/img/default.png" class="sin_foto_mini" alt="default">
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('formViewUpdate', id = mostrar.id ) }}"  ><button class="edit-btn">Editar</button></a>
+                    <!-- Botón que cambia dependiendo del estado -->
+                        {% if mostrar.estado == 1 %}
+                    <!-- Si el usuario está activo, mostrar el botón de desactivación -->
+                    <a href="{{ url_for('desactivarUsuario', id=mostrar.id) }}">
+                        <button class="delete-btn">Desactivar</button>
+                    </a>
+                        {% else %}
+                    <!-- Si el usuario está inactivo, mostrar el botón de activación -->
+                    <a href="{{ url_for('activarUsuario', id=mostrar.id) }}">
+                        <button class="activate-btn">Activar</button>
+                    </a>
+                        {% endif %}
+                </td>
+            </tr>
+
+            {% endfor %}
+            <!-- Agrega más usuarios según sea necesario -->
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+    

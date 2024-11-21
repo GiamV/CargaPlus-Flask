@@ -1,0 +1,172 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f4f6f9;
+}
+
+
+.sidebar {
+    width: 250px;
+    background-color: #4e73df;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.sidebar h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    width: 100%;
+}
+
+.sidebar ul li {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.sidebar ul li a {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #3751a1; /* Un tono más oscuro */
+    transform: translateX(5px); /* Mueve ligeramente el botón hacia la derecha */
+}
+
+.sidebar ul li a.active {
+    background-color: #2e59d9; /* Color diferente para el botón activo */
+    font-weight: bold;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+.new-user-btn {
+    padding: 10px 20px;
+    background-color: #4e73df;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.user-list table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-list th, .user-list td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-list th {
+    background-color: #f8f9fc;
+    color: #333;
+}
+
+.user-list td {
+    color: #555;
+}
+
+.edit-btn, .delete-btn, .activate-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-btn {
+    background-color: #1cc88a;
+    color: white;
+}
+
+.delete-btn {
+    background-color: #e74a3b;
+    color: white;
+    margin-left: 5px;
+}
+
+.activate-btn{
+    background-color: #ffd000;
+    color: white;
+    margin-left: 5px;
+}
+
+.edit-btn:hover, .delete-btn:hover, .activate-btn:hover {
+    opacity: 0.9;
+}
+
+
+.sin_foto_mini{
+    padding: 0px;
+    width: 50px;
+    margin: 0 auto;
+}
+
+.logout-container {
+    margin-top: auto; /* Empuja el botón hacia abajo */
+    width: 100%; /* Para que se alinee con el resto de los elementos */
+}
+.logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 40px); /* Ajuste al padding del sidebar */
+    margin: 10px 20px;
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+    background-color: #2e59d9; /* Color azul para combinar */
+    text-align: center;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+    font-weight: bold;
+}
+
+.logout-btn i {
+    margin-right: 8px; /* Espacio entre el icono y el texto */
+}
+
+.logout-btn:hover {
+    background-color: #1c3faa; /* Azul más oscuro al pasar el ratón */
+    transform: translateX(5px);
+}

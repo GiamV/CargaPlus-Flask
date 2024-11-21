@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Usuario{% endblock %}
+{% block customCSS %}<link rel="stylesheet" href="{{url_for('static', filename='css/registro.css')}}">{% endblock %}
+
+
+{% block body %}
+
+
+<header>
+    <h1>Panel de Administración</h1>
+    <a href="#"><button  class="new-user-btn">###</button></a>
+</header>
+
+<section class="user-list">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Hora de entrada</th>
+                <th>Hora de salida</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asistencia in asistencias %}
+            <tr class="{% if asistencia.status == 'Asistencia' %}asistencia{% elif asistencia.status == 'Tardanza' %}tardanza{% elif asistencia.status == 'Falta' %}falta{% endif %}">
+                <td>{{ asistencia.id }}</td>
+                <td>{{ asistencia.fecha }}</td>
+                <td>{{ asistencia.hora_entrada }}</td>
+                <td>{{ asistencia.hora_salida }}</td>
+                <td>{{ asistencia.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+
+{% endblock %}

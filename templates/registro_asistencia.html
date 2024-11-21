@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Usuario{% endblock %}
+{% block customCSS %}<link rel="stylesheet" href="{{url_for('static', filename='css/registro.css')}}">{% endblock %}
+
+
+{% block body %}
+
+<style>
+    /* Estilos generales para los inputs */
+    input[type="text"] {
+        width: 100%; /* O el tamaño que prefieras */
+        padding: 10px; /* Añadir espacio interno */
+        margin: 10px 0; /* Margen entre los campos */
+        border: 1px solid #ccc; /* Borde ligero */
+        border-radius: 5px; /* Bordes redondeados */
+        font-size: 16px; /* Tamaño de la fuente */
+        box-sizing: border-box; /* Incluir padding en el ancho total */
+    }
+
+    /* Botón personalizado */
+    button.submit-btn {
+        background-color: #333; /* Color del botón */
+        color: #fff; /* Color del texto */
+        padding: 10px 20px; /* Espaciado interno */
+        border: none; /* Sin borde */
+        border-radius: 5px; /* Bordes redondeados */
+        font-size: 16px; /* Tamaño de la fuente */
+        cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+    }
+
+    button.submit-btn:hover {
+        background-color: #555; /* Color del botón al pasar el cursor */
+    }
+
+    /* Ajustes para el contenedor del formulario */
+    form {
+        width: 100%; /* Asegura que el formulario ocupe todo el ancho disponible */
+    }
+</style>
+
+
+    <div class="main-content">
+        <header>
+            <h1>Asistencia</h1>
+        </header>
+        <!-- Contenedor principal de marcado -->
+        <div class="main-container">
+            <div class="attendance-card">
+                <div class="photo-box">
+                    <img src="/static/img/{{ current_user.foto }}" class="sin_foto_mini" alt="{{ current_user.foto }}">
+                </div> <!-- Foto que cubrirá el 50% -->
+                <div class="form-section">
+                    <h1>MARCAR ASISTENCIA</h1>
+    
+                   <!-- Formulario para enviar datos -->
+            <form  action="{{ url_for('formAddAsistencia') }}" method="POST"  method="POST">
+                <!-- Campo para el número de empleado -->
+                <label for="employee-number">Número de empleado:</label>
+                <input type="text" id="employee-number" name="id_usuario" value="{{ current_user.id }}" readonly>
+
+                <!-- Campo para el nombre completo -->
+                <label for="employee-name">Nombre completo:</label>
+                <input type="text" id="employee-name" value="{{ current_user.nombre }}" readonly>
+
+                <!-- Campo para la hora actual -->
+                <label for="current-time">Hora actual:</label>
+                <input type="text" id="current-time" readonly>
+                
+                <!-- Botón de envío -->
+                <button class="submit-btn" type="submit">Marcar</button>
+            </form>
+                </div>
+            </div>
+        </div>
+        <script>
+            function updateCurrentTime() {
+                const now = new Date();
+                const formattedTime = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                document.getElementById('current-time').value = formattedTime;
+            }
+        
+            // Actualiza la hora cada segundo
+            setInterval(updateCurrentTime, 1000);
+            updateCurrentTime(); // Actualización inicial
+        </script>
+    </div>
+    
+
+
+
+
+
+
+
+
+    {% endblock %}
+
+
+
+   

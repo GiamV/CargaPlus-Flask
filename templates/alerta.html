@@ -1,0 +1,35 @@
+{% if (tipo==1) %}
+<div id='alert' class="mi_alerta toast active">
+    <div class="toast-content">
+        <i class="bi bi-check check"></i>
+        <div class="message">
+            <span class="text text-1">Genial..!</span>
+            <span class="text text-2">{{ msg }}</span>
+        </div>
+    </div>
+    <i class="bi bi-x-lg close"></i>
+    <div class="progress active"></div>
+</div>
+{% endif %}
+
+<!-- JavaScript para controlar la alerta -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const alertBox = document.getElementById('alert');
+        const closeBtn = alertBox?.querySelector('.close');
+
+        if (alertBox) {
+            setTimeout(() => {
+                alertBox.classList.remove('active');
+                alertBox.classList.add('fade-out');
+                setTimeout(() => alertBox.remove(), 300);
+            }, 5000);
+
+            closeBtn?.addEventListener('click', () => {
+                alertBox.classList.remove('active');
+                alertBox.classList.add('fade-out');
+                setTimeout(() => alertBox.remove(), 300);
+            });
+        }
+    });
+</script>

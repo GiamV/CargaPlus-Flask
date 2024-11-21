@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+{% block customCSS %}<link rel="stylesheet" href="{{url_for('static', filename='css/home.css')}}">{% endblock %}
+
+
+{% block body %}
+
+<header>
+    <h1>Panel de Administración</h1>
+    
+</header>
+
+<div class="main-content">
+    <div class="welcome-section">
+        <h1>¡Bienvenido, {{ current_user.nombre }}!</h1>
+        <p>Has iniciado sesión exitosamente. ¿Qué te gustaría hacer hoy?</p>
+    </div>
+
+    <div class="dashboard-cards">
+        <div class="card">
+            <i class="fas fa-users"></i>
+            <h3>Usuarios</h3>
+            <p>Gestiona a todos los usuarios de tu sistema.</p>
+            <a href="/usuarios" class="btn">Ir a Usuarios</a>
+        </div>
+        <div class="card">
+            <i class="fas fa-cogs"></i>
+            <h3>Configuración</h3>
+            <p>Ajusta las configuraciones de la aplicación.</p>
+            <a href="/configuracion" class="btn">Ir a Configuración</a>
+        </div>
+        <div class="card">
+            <i class="fas fa-chart-line"></i>
+            <h3>Reportes</h3>
+            <p>Visualiza y genera reportes detallados.</p>
+            <a href="/reportes" class="btn">Ver Reportes</a>
+        </div>
+        <div class="card">
+            <i class="fas fa-user"></i>
+            <h3>Perfil</h3>
+            <p>Gestiona tu perfil y preferencias.</p>
+            <a href="/perfil" class="btn">Ver Perfil</a>
+        </div>
+    </div>
+
+    <div class="overview-section">
+        <h2>Resumen de Actividad</h2>
+        <div class="overview-cards">
+            <div class="overview-card">
+                <h3>Usuarios Activos</h3>
+                <p>50</p>
+            </div>
+            <div class="overview-card">
+                <h3>Configuraciones Recientes</h3>
+                <p>15</p>
+            </div>
+            <div class="overview-card">
+                <h3>Reportes Generados</h3>
+                <p>30</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+{% endblock %}
+
