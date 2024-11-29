@@ -14,28 +14,34 @@ from pymysql.cursors import DictCursor
 #Creando una funcion para obtener la lista de carros.
 def listarUsuarios():
     conexion_MySQLdb = obtener_conexion()  # Creando mi instancia a la conexión de BD
-    cur = conexion_MySQLdb.cursor()
 
-    cur.execute('''
+    # Cursor para obtener los datos de los usuarios
+    cur_usuarios = conexion_MySQLdb.cursor()
+    cur_usuarios.execute('''
         SELECT u.id, u.nombre, u.correo, u.estado, u.fecha_registro, u.foto, r.nombre_rol AS nombre_rol
         FROM usuarios u
         JOIN roles r ON u.id_rol = r.id
     ''')
-    resultadoBusqueda = cur.fetchall()  # fetchall() Obtener todos los registros
+    resultadoUsuarios = cur_usuarios.fetchall()
+    columnas = [desc[0] for desc in cur_usuarios.description]
+    listaUsuarios = [dict(zip(columnas, fila)) for fila in resultadoUsuarios]
 
-    # Obtener los nombres de las columnas
-    columnas = [desc[0] for desc in cur.description]
+    # Cursor para obtener el conteo total
+    cur_conteo = conexion_MySQLdb.cursor()
+    cur_conteo.execute('SELECT COUNT(*) FROM usuarios where estado=1')
+    totalUsuarios = cur_conteo.fetchone()[0]
 
-    # Convertir las filas de resultados a diccionarios
-    listaUsuarios = []
-    for fila in resultadoBusqueda:
-        usuario = dict(zip(columnas, fila))  # Emparejar los nombres de las columnas con los valores de cada fila
-        listaUsuarios.append(usuario)
+    # Cerrar los cursores y la conexión
+    cur_usuarios.close()
+    cur_conteo.close()
+    conexion_MySQLdb.close()
 
-    cur.close()  # Cerrando conexión SQL
-    conexion_MySQLdb.close()  # Cerrando conexión de la BD    
+    # Retornar los datos en un diccionario
+    return {
+        'usuarios': listaUsuarios,
+        'total': totalUsuarios
+    }
 
-    return listaUsuarios
 
 def updateUsuario(id=''):
         conexion_MySQLdb = obtener_conexion()

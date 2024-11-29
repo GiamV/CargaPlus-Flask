@@ -68,7 +68,11 @@
                 <input type="text" id="current-time" readonly>
                 
                 <!-- Botón de envío -->
-                <button class="submit-btn" type="submit">Marcar</button>
+                <button class="submit-btn" type="submit">{% if registro_existente %}
+                    Marcar salida
+                {% else %}
+                    Marcar entrada
+                {% endif %}</button>
             </form>
                 </div>
             </div>

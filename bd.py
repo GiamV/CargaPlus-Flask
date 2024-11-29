@@ -1,7 +1,7 @@
 import pymysql
 
 class DevelopmentConfig():
-    DEBUG = True
+    DEBUG = False
 
 class Config:
 

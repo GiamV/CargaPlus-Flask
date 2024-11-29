@@ -9,13 +9,44 @@ from datetime import datetime
 from bd import *
 from flask import session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-
+import pytz
 
 
 from pymysql.cursors import DictCursor
 
 
 app= Flask (__name__)
+
+
+
+
+# Función que se ejecutará automáticamente
+def ejecutar_tarea():
+    print(f"Tarea ejecutada a la hora: {datetime.now()}")
+
+# Zona horaria de Perú
+timezone = pytz.timezone('America/Lima')
+
+# Crear el programador
+scheduler = BackgroundScheduler(timezone=timezone)
+
+# Programar la tarea para que se ejecute todos los días a las 11:00 p.m.
+scheduler.add_job(ejecutar_tarea, 'cron', hour=0, minute=15)
+
+# Iniciar el programador
+scheduler.start()
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.config['SECRET_KEY'] = Config.SECRET_KEY
 login_manager_app=LoginManager(app)
@@ -56,7 +87,9 @@ def logout():
 
 @app.route('/home')
 def home():
-    return render_template('home.html', active_page="inicio")
+    print(listarUsuarios())
+    datos = listarUsuarios()
+    return render_template('home.html', active_page="inicio",usuarios=datos['usuarios'], total=datos['total'])
 
 
 
@@ -78,10 +111,39 @@ def volver():
 
 
     
-
-@app.route('/registro')
+@app.route('/registro', methods=['GET', 'POST'])
 def registro():
-    return render_template('registro_asistencia.html', active_page="registro" )
+    conexion_MySQLdb = obtener_conexion()
+    cursor = conexion_MySQLdb.cursor()
+
+    # Obtener el ID del usuario actual desde current_user
+    id_usuario = current_user.id
+
+    # Comprobar si ya existe un registro de entrada para el usuario hoy
+    fecha_hoy = datetime.now().strftime('%Y-%m-%d')
+    cursor.execute("SELECT * FROM asistencia WHERE id_usuario = %s AND fecha = %s AND hora_salida IS NULL", (id_usuario, fecha_hoy))
+    registro_existente = cursor.fetchone()  # Si existe un registro de entrada, se devolverá un registro
+
+    if request.method == 'POST':
+        print('Hola')
+    '''
+        if registro_existente:  # Si ya tiene una entrada, registrar la salida
+            hora_salida = datetime.now().strftime('%H:%M:%S')
+            cursor.execute("UPDATE asistencia SET hora_salida = %s WHERE id_usuario = %s AND fecha = %s", (hora_salida, id_usuario, fecha_hoy))
+        else:  # Si no tiene una entrada, registrar la entrada
+            hora_entrada = datetime.now().strftime('%H:%M:%S')
+            cursor.execute("INSERT INTO asistencia (id_usuario, fecha, hora_entrada, hora_salida, status) VALUES (%s, %s, %s, NULL, 'Asistencia')", (id_usuario, fecha_hoy, hora_entrada))
+
+        conexion_MySQLdb.commit()
+        cursor.close()
+        conexion_MySQLdb.close()
+        return redirect(url_for('registro'))  # Redirigir para evitar reenvío de formulario
+    '''
+
+    cursor.close()
+    conexion_MySQLdb.close()
+
+    return render_template('registro_asistencia.html', registro_existente=registro_existente,active_page="registro")
 
 
 
@@ -89,8 +151,8 @@ def registro():
 @login_required
 def usuario():
     print(listarUsuarios())
-
-    return render_template('usuarios/usuarios.html', active_page="usuarios", usuarios = listarUsuarios(),msg='El Registro fue un éxito', tipo=1 )
+    datos = listarUsuarios()
+    return render_template('usuarios/usuarios.html', active_page="usuarios", usuarios=datos['usuarios'], total=datos['total'],msg='El Registro fue un éxito', tipo=1 )
 
 
 #RUTAS
@@ -253,7 +315,12 @@ def historial():
 
 
 
+try:
+    # Mantener el servidor de Flask en ejecución
+    app.run(debug=True, use_reloader=False)  # use_reloader=False evita que se inicie el scheduler dos veces
 
+except (KeyboardInterrupt, SystemExit):
+    scheduler.shutdown()  # Detener el programador cuando el servidor se cierre
 
 
 if __name__ == '__main__':
