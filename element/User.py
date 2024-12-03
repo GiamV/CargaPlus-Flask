@@ -29,3 +29,6 @@ print(f"Hash generado: {hashed_password}")
 # Verificar si la contraseña ingresada es correcta
 correct = User.check_password(hashed_password, "ingreso")
 print(f"¿La contraseña es correcta? {correct}")
+
+
+
