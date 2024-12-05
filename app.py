@@ -201,9 +201,10 @@ def activarUsuario(id):
 def historial():
     return render_template('historial.html', active_page="historial", asistencias=listarAsistencia(current_user.id))
 
-@app.route("/chatbot")
-def chatbot_index():
-    return render_template("chatbot.html")
+# CHATBOT RUTA
+#@app.route("/chatbot")
+#def chatbot_index():
+#    return render_template("chatbot.html")
 
 @app.route("/chat", methods=["POST"])
 def chat():

@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 
 {% block title %}Home{% endblock %}
-{% block customCSS %}<link rel="stylesheet" href="{{url_for('static', filename='css/home.css')}}">{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/home.css')}}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+{% endblock %}
 
 
 {% block body %}
@@ -61,9 +65,67 @@
             </div>
         </div>
     </div>
+
+    <div id="chatbot-container" style="display: none;">
+        <!-- Componente del Chatbot -->
+        <div id="chat-container">
+            <div id="chat-window"></div>
+            <div id="chat-input-container">
+                <input id="chat-input" type="text" placeholder="Escribe tu mensaje...">
+                <button id="send-button">Enviar</button>
+            </div>
+        </div>
+    </div>
+    <button id="chatbot-toggle" class="chatbot-button">💬 Chatbot</button>
+    
 </div>
 
 
+<script>
+    const chatbotToggle = document.getElementById("chatbot-toggle");
+    const chatbotContainer = document.getElementById("chatbot-container");
+
+    chatbotToggle.addEventListener("click", () => {
+        const isVisible = chatbotContainer.style.display === "block";
+        chatbotContainer.style.display = isVisible ? "none" : "block";
+    });
+
+    const chatWindow = document.getElementById("chat-window");
+    const chatInput = document.getElementById("chat-input");
+    const sendButton = document.getElementById("send-button");
+
+    function addMessage(message, sender) {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", sender === "user" ? "user-message" : "bot-message");
+        messageDiv.textContent = message;
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    sendButton.addEventListener("click", () => {
+        const userInput = chatInput.value.trim();
+        if (userInput) {
+            addMessage(userInput, "user");
+            chatInput.value = "";
+
+            // Llamada al backend Flask
+            fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userInput }),
+            })
+                .then(response => response.json())
+                .then(data => addMessage(data.reply, "bot"))
+                .catch(error => console.error("Error:", error));
+        }
+    });
+
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendButton.click();
+    });
+
+    addMessage("Hola, ¿en qué puedo ayudarte?", "bot");
+</script>
 
 
 
