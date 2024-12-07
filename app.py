@@ -19,7 +19,7 @@ from werkzeug.utils import secure_filename
 # Configuración del API Key para Google Generative AI
 genai.configure(api_key="AIzaSyDItV4QhK26AYtqVajq-kFn3x6Lb43hTHM")
 
-# Crear el modelo para la IA
+# Create the model
 generation_config = {
   "temperature": 1,
   "top_p": 0.95,
@@ -31,7 +31,7 @@ generation_config = {
 model = genai.GenerativeModel(
   model_name="gemini-1.5-pro",
   generation_config=generation_config,
-  system_instruction="Eres un asistente de ayuda amable para ayudar a las personas a registrar su asistencia. Para socializar con una persona se amable, saluda si inicia la comunicacion con la persona. La comunicacion se reinicia cuando la persona reincia con un saludo, ejemplo: Hola, puedes ayudarme, necesito ayuda. El proceso de registro de asistencia es el siguiente, primero se solicitan datos, el correo y la contraseña a partir de obtener los datos estos se validan y se confirma la existencia del empleado para luego pedir si desea registrar su asistencia. El proceso de registro se da cuando la persona quiere registrar su asistencia o cuando la persona inicia la conversacion y no sabe que hacer, cuando tarda 10 segundos en tener o mostrar su duda inicia a preguntarle si quiere registrar su asistencia.",
+  system_instruction="Eres un asistente de ayuda amable para ayudar a las personas a registrar su asistencia. Para socializar con una persona se amable, saluda si inicia la comunicacion con la persona. La comunicacion se reinicia cuando la persona reincia con un saludo, ejemplo: Hola, puedes ayudarme, necesito ayuda. El proceso de registro de asistencia es el siguiente, primero se solicitan datos, el correo y la contraseña a partir de obtener los datos estos se validan y se confirma la existencia del empleado para luego pedir si desea registrar su asistencia. El proceso de registro se da cuando la persona quiere registrar su asistencia o cuando la persona inicia la conversacion y no sabe que hacer, cuando tarda 10 segundos en tener o mostrar su duda inicia a preguntarle si quiere registrar su asistencia. Los mensajes cuando se envian los datos deben ser: Gracias. Dame un momento para validar tus datos. Tus datos son correctos, Gustavo. ¿Deseas registrar tu asistencia ahora?, nunca incluyas: La palabra simulacion. Cuando ingreso los datos correo y contraseña, y me indiques que se esta registrando la asistencia no nigas Simulacion Exitosa, solo indica se asistencia registada y muestra un emoji. Me muestras esto en la conversacion: Gracias. Dame un momento para validar tus datos... (Simulación de validación) Tus datos son correctos, Gustavo. ¿Deseas registrar tu asistencia ahora?, no me indiques que es una simulacion. ",
 )
 
 history = []
@@ -40,19 +40,23 @@ history = []
 app = Flask(__name__)
 
 # Configuración de la clave secreta
-app.config['SECRET_KEY'] = 'tu_clave_secreta'
+app.config['SECRET_KEY'] = Config.SECRET_KEY
 login_manager_app = LoginManager(app)
 
-# Inicialización del programador de tareas
-timezone = pytz.timezone('America/Lima')
-scheduler = BackgroundScheduler(timezone=timezone)
-
-# Función de tarea programada
+# Función que se ejecutará automáticamente
 def ejecutar_tarea():
     print(f"Tarea ejecutada a la hora: {datetime.now()}")
 
+# Zona horaria de Perú
+timezone = pytz.timezone('America/Lima')
+
+# Crear el programador
+scheduler = BackgroundScheduler(timezone=timezone)
+
 # Programar la tarea para que se ejecute todos los días a las 11:00 p.m.
 scheduler.add_job(ejecutar_tarea, 'cron', hour=0, minute=15)
+
+# Iniciar el programador
 scheduler.start()
 
 @login_manager_app.user_loader
@@ -86,25 +90,55 @@ def logout():
 
 @app.route('/home')
 def home():
+    print(listarUsuarios())
     datos = listarUsuarios()
     return render_template('home.html', active_page="inicio", usuarios=datos['usuarios'], total=datos['total'])
 
+@app.errorhandler(401)
+def status_401(error):
+    return redirect('/login')
+
+@app.errorhandler(404)
+def status_404(error):
+    return render_template('404.html'), 404
+
 @app.route('/volver')
 def volver():
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
-    return redirect(url_for('login'))
+    if current_user.is_authenticated:  # Verifica si el usuario está autenticado
+        return redirect(url_for('home'))  # Redirige a la página principal (o la que prefieras)
+    else:
+        return redirect(url_for('login'))  # Si no está autenticado, redirige al login
+
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     conexion_MySQLdb = obtener_conexion()
     cursor = conexion_MySQLdb.cursor()
 
+    # Obtener el ID del usuario actual desde current_user
     id_usuario = current_user.id
+
+    # Comprobar si ya existe un registro de entrada para el usuario hoy
     fecha_hoy = datetime.now().strftime('%Y-%m-%d')
     cursor.execute("SELECT * FROM asistencia WHERE id_usuario = %s AND fecha = %s AND hora_salida IS NULL", (id_usuario, fecha_hoy))
-    registro_existente = cursor.fetchone()
+    registro_existente = cursor.fetchone()  # Si existe un registro de entrada, se devolverá un registro
 
+    if request.method == 'POST':
+        print('Hola')
+    '''
+        if registro_existente:  # Si ya tiene una entrada, registrar la salida
+            hora_salida = datetime.now().strftime('%H:%M:%S')
+            cursor.execute("UPDATE asistencia SET hora_salida = %s WHERE id_usuario = %s AND fecha = %s", (hora_salida, id_usuario, fecha_hoy))
+        else:  # Si no tiene una entrada, registrar la entrada
+            hora_entrada = datetime.now().strftime('%H:%M:%S')
+            cursor.execute("INSERT INTO asistencia (id_usuario, fecha, hora_entrada, hora_salida, status) VALUES (%s, %s, %s, NULL, 'Asistencia')", (id_usuario, fecha_hoy, hora_entrada))
+
+        conexion_MySQLdb.commit()
+        cursor.close()
+        conexion_MySQLdb.close()
+        return redirect(url_for('registro'))  # Redirigir para evitar reenvío de formulario
+    '''
+            
     cursor.close()
     conexion_MySQLdb.close()
 
@@ -113,12 +147,15 @@ def registro():
 @app.route('/usuarios', methods=['GET', 'POST'])
 @login_required
 def usuario():
+    print(listarUsuarios())
     datos = listarUsuarios()
     return render_template('usuarios/usuarios.html', active_page="usuarios", usuarios=datos['usuarios'], total=datos['total'], msg='El Registro fue un éxito', tipo=1)
 
+# RUTAS
 @app.route('/registrar-usuario', methods=['GET', 'POST'])
 def addUsuario():
     return render_template('usuarios/add_usuarios.html', active_page="usuarios", roles=listarRoles())
+
 
 @app.route('/usuario', methods=['POST'])
 def formAddUsuario():
@@ -133,6 +170,8 @@ def formAddUsuario():
         if request.files['foto']:
             file = request.files['foto']
             foto = recibeFoto(file)
+            
+            # Insertamos los datos del usuario en la base de datos
             resultData = registrarUsuario(nombre, correo, password, id_rol, estado, foto)
 
             if resultData == 1:
@@ -150,6 +189,21 @@ def formAddUsuario():
 
         return redirect('/usuarios')
 
+@app.route('/registro-asistencia', methods=['POST'])
+def formAddAsistencia():
+    if request.method == 'POST':
+        resultData = registrarAsistencia(current_user.id)
+        if resultData == 1:
+            flash('El Registro fue un éxito', 'success')  # 'success' indica el tipo de mensaje
+            session['msg'] = 'El Registro fue un éxito'
+            session['tipo'] = 1
+        else:
+            flash('Error al registrar Asistencia', 'error')
+            session['msg'] = 'Error al registrar Asistencia'
+            session['tipo'] = 0
+
+    return redirect('/home')
+
 @app.route('/form-update-usuario/<string:id>', methods=['GET', 'POST'])
 def formViewUpdate(id):
     if request.method == 'GET':
@@ -158,6 +212,7 @@ def formViewUpdate(id):
             return render_template('usuarios/update_usuarios.html', dataInfo=resultData, roles=listarRoles())
         return redirect('/usuarios')
     return redirect('/usuarios')
+
 
 @app.route('/actualizar-usuario/<string:id>', methods=['POST'])
 def formActualizarUsuario(id):
@@ -185,21 +240,32 @@ def formActualizarUsuario(id):
 def desactivarUsuario(id):
     conexion_MySQLdb = obtener_conexion()
     cur = conexion_MySQLdb.cursor(DictCursor)
+    # Actualiza el estado a 0 (desactivado)
     cur.execute('UPDATE usuarios SET estado=0 WHERE id=%s', (id))
+    # Asegúrate de hacer commit para que los cambios se guarden en la base de datos
     conexion_MySQLdb.commit()
+
+    # Redirigir de vuelta a la lista de carros o a otra página
     return redirect('/usuarios')
 
+        
 @app.route('/activar-usuario/<string:id>', methods=['GET', 'POST'])
 def activarUsuario(id):
     conexion_MySQLdb = obtener_conexion()
     cur = conexion_MySQLdb.cursor(DictCursor)
+    # Actualiza el estado a 0 (desactivado)
     cur.execute('UPDATE usuarios SET estado=1 WHERE id=%s', (id))
+    # Asegúrate de hacer commit para que los cambios se guarden en la base de datos
     conexion_MySQLdb.commit()
+
+    # Redirigir de vuelta a la lista de carros o a otra página
     return redirect('/usuarios')
+
 
 @app.route('/historial')
 def historial():
-    return render_template('historial.html', active_page="historial", asistencias=listarAsistencia(current_user.id))
+    print(listarAsistencia(current_user.id))
+    return render_template('historial.html', active_page="historial",asistencias = listarAsistencia(current_user.id))
 
 # CHATBOT RUTA
 #@app.route("/chatbot")
@@ -223,13 +289,20 @@ def chat():
 
     return jsonify({"reply": reply})
 
+
 def recibeFoto(file):
-    basepath = os.path.dirname(__file__)
-    filename = secure_filename(file.filename)
-    extension = os.path.splitext(filename)[1]
-    nuevoNombreFile = stringAleatorio() + extension
-    upload_path = os.path.join(basepath, 'static/img', nuevoNombreFile)
+    print(file)
+    basepath = os.path.dirname (__file__) #La ruta donde se encuentra el archivo actual
+    filename = secure_filename(file.filename) #Nombre original del archivo
+
+    #capturando extensión del archivo ejemplo: (.png, .jpg, .pdf ...etc)
+    extension           = os.path.splitext(filename)[1]
+    nuevoNombreFile     = stringAleatorio() + extension
+    #print(nuevoNombreFile)
+        
+    upload_path = os.path.join (basepath, 'static/img', nuevoNombreFile) 
     file.save(upload_path)
+
     return nuevoNombreFile
 
 try:

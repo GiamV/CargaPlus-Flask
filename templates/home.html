@@ -12,7 +12,7 @@
 
 <header>
     <h1>Panel de Administración</h1>
-    
+
 </header>
 
 <div class="main-content">
@@ -66,72 +66,95 @@
         </div>
     </div>
 
-    <div id="chatbot-container" style="display: none;">
+    <div id="chatbot-container" class="chatbot-container">
         <!-- Componente del Chatbot -->
-        <div id="chat-container">
-            <div id="chat-window"></div>
-            <div id="chat-input-container">
-                <input id="chat-input" type="text" placeholder="Escribe tu mensaje...">
-                <button id="send-button">Enviar</button>
+        <div class="chat-container">
+            <div class="chat-window" id="chat-window"></div>
+            <div class="chat-input-container" id="chat-input-container">
+                <input id="chat-input" type="text" placeholder="Escribe tu mensaje..." class="chat-input">
+                <button id="send-button" class="send-button">Enviar</button>
             </div>
         </div>
     </div>
-    <button id="chatbot-toggle" class="chatbot-button">
-        <img src="../static/img/chat_bot_asdaasdad.png" alt="">
+    
+    <button id="chatbot-toggle" class="chatbot-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" 
+        fill="#5f6368"><path d="M320-520q17 0 28.5-11.5T360-560q0-17-11.5-28.5T320-600q-17 0-28.5 11.5T280-560q0 17 11.5 28.5T320-520Zm160 0q17 0 28.5-11.5T520-560q0-17-11.5-28.5T480-600q-17 0-28.5 11.5T440-560q0 17 11.5 28.5T480-520Zm160 0q17 0 28.5-11.5T680-560q0-17-11.5-28.5T640-600q-17 0-28.5 11.5T600-560q0 17 11.5 28.5T640-520ZM80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Zm126-240h594v-480H160v525l46-45Zm-46 0v-480 480Z"/></svg>
     </button>
     
+
 </div>
 
 
 <script>
-    const chatbotToggle = document.getElementById("chatbot-toggle");
-    const chatbotContainer = document.getElementById("chatbot-container");
+const chatbotToggle = document.getElementById("chatbot-toggle");
+const chatbotContainer = document.getElementById("chatbot-container");
 
-    chatbotToggle.addEventListener("click", () => {
-        const isVisible = chatbotContainer.style.display === "block";
-        chatbotContainer.style.display = isVisible ? "none" : "block";
-    });
+chatbotToggle.addEventListener("click", () => {
+    const isVisible = chatbotContainer.style.display === "block";
+    chatbotContainer.style.display = isVisible ? "none" : "block";
+});
 
-    const chatWindow = document.getElementById("chat-window");
-    const chatInput = document.getElementById("chat-input");
-    const sendButton = document.getElementById("send-button");
+const chatWindow = document.getElementById("chat-window");
+const chatInput = document.getElementById("chat-input");
+const sendButton = document.getElementById("send-button");
 
-    function addMessage(message, sender) {
-        const messageDiv = document.createElement("div");
-        messageDiv.classList.add("message", sender === "user" ? "user-message" : "bot-message");
-        messageDiv.textContent = message;
-        chatWindow.appendChild(messageDiv);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+function addMessage(message, sender) {
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", sender === "user" ? "user-message" : "bot-message");
+    messageDiv.textContent = message;
+    chatWindow.appendChild(messageDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+sendButton.addEventListener("click", () => {
+    const userInput = chatInput.value.trim();
+    if (userInput) {
+        addMessage(userInput, "user");
+        chatInput.value = "";
+
+        // Llamada al backend Flask
+        fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userInput }),
+        })
+        .then(response => response.json())
+        .then(data => addMessage(data.reply, "bot"))
+        .catch(error => console.error("Error:", error));
     }
+});
 
-    sendButton.addEventListener("click", () => {
-        const userInput = chatInput.value.trim();
-        if (userInput) {
-            addMessage(userInput, "user");
-            chatInput.value = "";
+chatInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") sendButton.click();
+});
 
-            // Llamada al backend Flask
-            fetch("/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userInput }),
-            })
-                .then(response => response.json())
-                .then(data => addMessage(data.reply, "bot"))
-                .catch(error => console.error("Error:", error));
-        }
+addMessage("Hola, ¿en qué puedo ayudarte?", "bot");
+
+</script>
+
+<script>
+    // Obtenemos el botón del chatbot
+    const chatbotToggleButton = document.getElementById("chatbot-toggle");
+
+    // Agregamos el evento de clic al botón
+    chatbotToggleButton.addEventListener("click", function() {
+        // Añadimos o quitamos la clase 'active' al hacer clic
+        chatbotToggleButton.classList.toggle("active");
+
+        // Aquí puedes agregar la lógica para abrir o cerrar el chat (esto depende de tu implementación)
+        // Por ejemplo:
+        const chatWindow = document.getElementById("chat-window");
+        chatWindow.classList.toggle("open");  // Abre o cierra el chat (según el estado)
+
+        const chatInputContainer = document.getElementById("chat-input-container");
+        chatInputContainer.classList.toggle("open");  // Muestra u oculta el input
     });
-
-    chatInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") sendButton.click();
-    });
-
-    addMessage("Hola, ¿en qué puedo ayudarte?", "bot");
 </script>
 
 
 
 
 
-{% endblock %}
 
+{% endblock %}

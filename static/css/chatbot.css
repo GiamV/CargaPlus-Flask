@@ -1,5 +1,5 @@
-#chatbot-container {
-    all: unset;
+/* Estilos generales para el Chatbot */
+.chatbot-container {
     position: fixed;
     bottom: 100px;
     right: 20px;
@@ -10,66 +10,145 @@
     font-family: Arial, sans-serif;
 }
 
-#chat-container {
-    all: unset;
+/* Contenedor de la ventana de chat */
+.chat-container {
+    display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
-    background: white;
+    background-color: white;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
 }
 
-#chat-window {
-    all: unset;
+/* Ventana donde aparecen los mensajes */
+.chat-window {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
+    font-size: 1.1em;
+    color: #333;
 }
 
-#chat-input-container {
-    all: unset;
+/* Contenedor de la barra de entrada */
+.chat-input-container {
     display: flex;
     padding: 10px;
     border-top: 1px solid #ddd;
 }
 
-#chat-input {
-    all: unset;
+/* Estilos del campo de entrada */
+.chat-input {
     flex: 1;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     outline: none;
+    font-size: 1em;
 }
 
-#send-button {
-    all: unset;
+/* Estilo del botón de enviar */
+.send-button {
     background-color: #007bff;
     color: white;
     padding: 10px;
     margin-left: 10px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 1em;
 }
 
-#send-button:hover {
+.send-button:hover {
     background-color: #0056b3;
 }
 
-.chatbot-button {
+/* Estilo del botón de abrir el chatbot */
+.chatbot-toggle {
     background-color: #5dd55d;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.chatbot-button:hover {
+
+.chatbot-toggle:hover {
     background-color: #96afc9;
 }
 
-.chatbot-button img {
-    width: 70px;
-    height: 70px;
+.chatbot-toggle img {
+    width: 50px;
+    height: 50px;
+}
+
+/* Estilos para los mensajes */
+.message {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background-color: #e1f7d5;
+    align-self: flex-end;
+}
+
+.bot-message {
+    background-color: #f1f1f1;
+    align-self: flex-start;
+}
+
+/* Estilos para el botón de enviar */
+.send-button {
+    background-color: #4CAF50;  /* Color de fondo */
+    color: white;                /* Color del texto */
+    border: none;                /* Sin borde */
+    border-radius: 5px;          /* Bordes redondeados */
+    padding: 10px 20px;          /* Espaciado interno */
+    cursor: pointer;            /* Cambia el cursor a puntero */
+    font-size: 1.2em;            /* Tamaño de fuente */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Transición de efectos */
+}
+
+/* Efecto hover para el botón de enviar */
+.send-button:hover {
+    background-color: #45a049;  /* Color más oscuro cuando pasa el mouse */
+    transform: scale(1.05);      /* Efecto de aumentar tamaño */
+}
+
+/* Estilos para el botón del chatbot */
+.chatbot-toggle {
+    background-color: transparent;  /* Sin fondo */
+    border: none;                   /* Sin borde */
+    cursor: pointer;                /* Cursor tipo mano al pasar sobre el botón */
+    padding: 10px;                  /* Espaciado interno */
+    transition: transform 0.3s ease; /* Transición suave para rotación */
+}
+
+/* Cambiar el color del SVG */
+.chatbot-toggle svg {
+    width: 40px;
+    height: 40px;
+    fill: #007bff;  /* Color inicial del SVG */
+    transition: fill 0.3s ease; /* Transición suave al cambiar el color */
+}
+
+/* Cambiar el color del SVG al hacer clic */
+.chatbot-toggle.active svg {
+    fill: #4CAF50;  /* Color cuando el chat está activo */
+}
+
+/* Estilos para la rotación del botón cuando está activo */
+.chatbot-toggle.active {
+    transform: rotate(360deg);  /* Rotación del botón */
 }
